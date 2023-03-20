@@ -36,7 +36,7 @@ import org.json.JSONObject;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
-    public static final String url = "http://192.168.43.110/androidphpmysql/retrieve.php";
+    public static final String url = "http://192.168.43.110/androidphpmysql/notification.php";
     private JSONArray result;
 
     @Override
