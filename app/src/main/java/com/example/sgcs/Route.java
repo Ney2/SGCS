@@ -31,6 +31,9 @@ public class Route extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
 
+    public static ArrayList<Garbage> garbageArrayList = new ArrayList<>();
+    String url = "http://192.168.43.110/androidphpmysql/notification.php";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +56,6 @@ public class Route extends AppCompatActivity implements OnMapReadyCallback {
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
 
     }
 }
