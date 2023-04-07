@@ -78,12 +78,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     String longitude = object.getString("longitude");
                                     String level = object.getString("level");
 
+                                    LatLng latLng = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+
                                     mMap.addMarker(new MarkerOptions()
-                                            .position(new LatLng(Double.parseDouble(latitude) , Double.parseDouble(longitude)))
+                                            .position(latLng)
                                             .title(level)
                                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
                                     );
 
+                                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
                                 }
                             }
                         }
