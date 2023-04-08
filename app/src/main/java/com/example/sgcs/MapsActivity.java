@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.DirectionsApi;
+import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.errors.ApiException;
@@ -35,7 +36,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener {
 
@@ -63,7 +66,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // This is how you can draw the shortest path between two points
         LatLng origin = new LatLng(8.960662740046882, 38.77280735505152);
         LatLng destination = new LatLng(8.976831653490418, 38.74334306685664);
-        drawShortestPath(origin, destination);
+        LatLng[] waypoints = new LatLng[]{
+                new LatLng(8.95864157525013, 38.76779433379614),
+                new LatLng(8.968242007887543, 38.76104210108481),
+                new LatLng(8.951163167790439, 38.759098276516404)
+        };
+        drawShortestPath(origin, destination, waypoints);
 
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -117,12 +125,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void drawShortestPath(LatLng origin, LatLng destination) {
+    private void drawShortestPath(LatLng origin, LatLng destination, LatLng[] waypoints) {
         try {
-            String o = origin.latitude + ", " + origin.longitude;
-            String d = destination.latitude + ", " + destination.longitude;
             // Get shortest path from api
-            DirectionsResult results = getDirectionsResult(o, d);
+            DirectionsResult results = getDirectionsResult(origin, destination, waypoints);
             List<LatLng> decodedPath = PolyUtil.decode(results.routes[0].overviewPolyline.getEncodedPath());
             // Draw the path with polyline
             mMap.addPolyline(new PolylineOptions().addAll(decodedPath)).setColor(Color.BLUE);
@@ -149,11 +155,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private DirectionsResult getDirectionsResult(String origin, String destination) throws ApiException, InterruptedException, IOException {
-        return DirectionsApi.newRequest(getGeoContext())
+    private DirectionsResult getDirectionsResult(LatLng origin, LatLng destination, LatLng[] waypoints) throws ApiException, InterruptedException, IOException {
+        DirectionsApiRequest request = DirectionsApi.newRequest(getGeoContext())
                 .mode(TravelMode.DRIVING)
-                .origin(origin)
-                .destination(destination).await();
+                .origin(new com.google.maps.model.LatLng(origin.latitude, origin.longitude))
+                .destination(new com.google.maps.model.LatLng(destination.latitude, destination.longitude));
+        if (waypoints != null) {
+            List<com.google.maps.model.LatLng> _waypoints = Arrays.stream(waypoints).map(waypoint ->
+                    new com.google.maps.model.LatLng(waypoint.latitude, waypoint.longitude)
+            ).collect(Collectors.toList());
+            request.waypoints(_waypoints.toArray(new com.google.maps.model.LatLng[0]));
+
+        }
+        return request.await();
     }
 
     private GeoApiContext getGeoContext() {
