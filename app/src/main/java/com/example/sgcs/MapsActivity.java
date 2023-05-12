@@ -171,7 +171,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private GeoApiContext getGeoContext() {
-        String apiKey = "AIzaSyAVZ0xNw49Xslmr9xqB2Md18DEYY7rZiKs";
+        String apiKey = getString(R.string.directions_api_key);
         return new GeoApiContext.Builder()
                 .apiKey(apiKey)
                 .build();
